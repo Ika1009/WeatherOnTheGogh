@@ -1,5 +1,9 @@
+import CONFIG from './config.js'; // Adjust the path to point to the location of `config.js`
 
-
+const WEATHER_API_KEY = CONFIG.WEATHER_API_KEY;
+const WEATHER_BASE_URL = CONFIG.WEATHER_BASE_URL;
+const IPINFO_ACCESS_TOKEN = CONFIG.IPINFO_ACCESS_TOKEN;
+const IPINFO_API_URL = CONFIG.IPINFO_API_URL;
 
 let weatherCategories = {
   "200_Thunderstorm_thunderstorm with light rain": [
