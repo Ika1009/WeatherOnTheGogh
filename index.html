@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weather UI</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- IBM Plex Sans Font -->
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="video-background">
+        <video autoplay muted loop playsinline>
+            <source id="video-source" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    
+
+    <div class="weather-container">
+      <!-- Gornji levi ugao: temperatura i lokacija -->
+      <div class="top-left">
+        <div class="temperature" id="temperature"></div>
+        <div class="location" id="location"></div>
+      </div>
+
+      <!-- Donji deo: Time bar i opis slike -->
+      <div class="bottom">
+        <div class="time-bar-container">
+          <!-- Prikaz trenutnog vremena -->
+          <div class="time" id="time"></div>
+          <div class="time-bar" id="time-bar"></div>
+          <div class="image-label" id="image-label"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Skripta na kraju tela stranice -->
+    <script src="script.js"></script>
+</body>
+</html>
