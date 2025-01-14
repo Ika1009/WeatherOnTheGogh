@@ -245,7 +245,7 @@ async function getWeatherData(lat, lon, city) {
     const weatherDescription = getWeatherCondition(weatherCode);
     console.log("Current Weather Condition:", weatherDescription);
 
-    const temperature = data.list[0].main.temp;
+    const temperature = Math.round(data.list[0].main.temp);
     const fullTime = data.list[0].dt_txt; // Format: "2024-12-09 21:00:00"
     const formattedTime = extractTime(fullTime);
     console.log(`Temperature: ${temperature}°C, Time: ${formattedTime}, City: ${city}`);
@@ -263,7 +263,6 @@ async function getWeatherData(lat, lon, city) {
 
     document.getElementById("temperature").textContent = `${temperature}°`;
     document.getElementById("time").textContent = formattedTime;
-    document.getElementById("image-label").textContent = weatherDescription;
     document.getElementById("location").textContent = city;
 
   } catch (error) {
@@ -291,7 +290,7 @@ async function getRandomVideoSource(weatherDescription) {
     const videos = weatherCategories[trimmedDescription];
     console.log(videos);
     const randomIndex = Math.floor(Math.random() * videos.length);
-    console.log(videos[randomIndex]);
+    document.getElementById("image-label").textContent = videos[randomIndex].slice(5, -4);
     return `${weatherDescription}/${videos[randomIndex]}`;
   } catch (error) {
     console.error("Failed to get random video source:", error);
