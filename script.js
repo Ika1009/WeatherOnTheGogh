@@ -88,7 +88,7 @@ let weatherCategories = {
       "771 - Day - View of the Sea at Scheveningen.mp4",
       "771 - Day - Wheatfield under Thunderclouds.mp4"
   ],
-  "800_Clear_clear_sky": [
+  "800_Clear_clear sky": [
       "800 - Day - Allotment with Sunflower.mp4",
       "800 - Day - Avenue of Poplars.mp4",
       "800 - Day - Bank of the Seine.mp4",
@@ -243,16 +243,13 @@ async function getWeatherData(lat, lon, city) {
     // Get weather condition for the first forecast period
     const weatherCode = data.list[0].weather[0].id;
     const weatherDescription = getWeatherCondition(weatherCode);
-    console.log("Current Weather Condition:", weatherDescription);
 
     const temperature = Math.round(data.list[0].main.temp);
     const fullTime = data.list[0].dt_txt; // Format: "2024-12-09 21:00:00"
     const formattedTime = extractTime(fullTime);
-    console.log(`Temperature: ${temperature}°C, Time: ${formattedTime}, City: ${city}`);
 
     // Determine the video source based on the weather description
     const videoSource = await getRandomVideoSource(weatherDescription);
-    console.log("Selected video source:", videoSource);
 
     // Update video element and dynamic content
     const videoSourceElement = document.getElementById("video-source");
@@ -280,7 +277,6 @@ function extractTime(apiTime) {
 async function getRandomVideoSource(weatherDescription) {
   try {
     const trimmedDescription = weatherDescription.split('/').pop();
-    console.log(weatherCategories[trimmedDescription].length);
     // Check if the trimmedDescription exists in weatherCategories
     if (!weatherCategories[trimmedDescription] || weatherCategories[trimmedDescription].length === 0) {
       throw new Error(`No videos available for weather condition: ${trimmedDescription}`);
@@ -288,7 +284,6 @@ async function getRandomVideoSource(weatherDescription) {
 
     // Get a random video from the weather category
     const videos = weatherCategories[trimmedDescription];
-    console.log(videos);
     const randomIndex = Math.floor(Math.random() * videos.length);
     document.getElementById("image-label").textContent = videos[randomIndex].slice(5, -4);
     return `${weatherDescription}/${videos[randomIndex]}`;
