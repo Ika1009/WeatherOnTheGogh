@@ -242,6 +242,7 @@ async function getWeatherData(lat, lon, city) {
 
     // Get weather condition for the first forecast period
     const weatherCode = data.list[0].weather[0].id;
+    const weatherDesc = data.list[0].weather[0].main;
     const weatherDescription = getWeatherCondition(weatherCode);
 
     const temperature = Math.round(data.list[0].main.temp);
@@ -260,7 +261,7 @@ async function getWeatherData(lat, lon, city) {
 
     document.getElementById("temperature").textContent = `${temperature}°`;
     document.getElementById("time").textContent = formattedTime;
-    document.getElementById("location").textContent = city;
+    document.getElementById("location").textContent = `${weatherDesc}, ${city}`;
 
   } catch (error) {
     console.error("Failed to fetch weather data:", error);
