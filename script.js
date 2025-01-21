@@ -114,7 +114,7 @@ const updateUI = (videoSource, temperature, formattedTime, weatherDesc, city) =>
     locationElement.textContent = `${weatherDesc}, ${city}`;
 
     videoElement.classList.add("show");
-  }, 1000);
+  }, 700);
 };
 
 
