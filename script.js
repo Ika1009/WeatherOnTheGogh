@@ -91,16 +91,32 @@ const getRandomVideoSource = async (weatherDescription) => {
 };
 
 const updateUI = (videoSource, temperature, formattedTime, weatherDesc, city) => {
-  const videoSourceElement = document.getElementById("video-source");
-  videoSourceElement.src = videoSource;
-
   const videoElement = document.querySelector("video");
-  videoElement.load();
+  const videoSourceElement = document.getElementById("video-source");
+  const temperatureElement = document.getElementById("temperature");
+  const timeElement = document.getElementById("time");
+  const locationElement = document.getElementById("location");
 
-  document.getElementById("temperature").textContent = `${temperature}°`;
-  document.getElementById("time").textContent = formattedTime;
-  document.getElementById("location").textContent = `${weatherDesc}, ${city}`;
+  videoElement.classList.remove("show");
+  
+  setTimeout(() => {
+    videoSourceElement.src = videoSource;
+
+    videoSourceElement.onerror = () => {
+      videoSourceElement.src = "default-video.mp4";
+      videoElement.load();
+    };
+
+    videoElement.load();
+
+    temperatureElement.textContent = `${temperature}°`;
+    timeElement.textContent = formattedTime;
+    locationElement.textContent = `${weatherDesc}, ${city}`;
+
+    videoElement.classList.add("show");
+  }, 1000);
 };
+
 
 const getLocationFromIP = async () => {
   try {

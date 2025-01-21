@@ -106,3 +106,12 @@ video {
   margin-top: 30px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
 }
+
+.fade {
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+}
+
+.fade.show {
+  opacity: 1;
+}
