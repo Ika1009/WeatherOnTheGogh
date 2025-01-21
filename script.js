@@ -109,8 +109,12 @@ const getLocationFromIP = async () => {
 
 const initializeTimeBar = () => {
   const timeBar = document.getElementById('time-bar');
+  const timeDisplay = document.getElementById('time');
+  let isMouseDown = false;
+  let startX;
+  let scrollLeft;
 
-  for (let i = 0; i < 31; i++) {
+  for (let i = -15; i < 38; i++) {
     const line = document.createElement('div');
 
     if (i == 15) {
@@ -120,6 +124,7 @@ const initializeTimeBar = () => {
     }
 
     line.classList.add('line');
+    line.id = `hour-${i}`;
 
     const hourContainer = document.createElement('div');
     hourContainer.style.width = '20px';
@@ -131,6 +136,77 @@ const initializeTimeBar = () => {
     hourContainer.appendChild(line);
     timeBar.appendChild(hourContainer);
   }
+
+  const highlightCenterLine = () => {
+    const lines = Array.from(document.querySelectorAll('.line')); 
+    const timeBarRect = timeBar.getBoundingClientRect(); 
+    const centerX = timeBarRect.left + timeBarRect.width / 2; 
+  
+    let closestLine = null;
+    let minDistance = Infinity;
+  
+    lines.forEach((line) => {
+      const lineRect = line.getBoundingClientRect();
+      const lineCenterX = lineRect.left + lineRect.width / 2;
+      const distance = Math.abs(lineCenterX - centerX);
+  
+      if (distance < minDistance) {
+        closestLine = line;
+        minDistance = distance;
+      }
+    });
+  
+    lines.forEach((line) => line.classList.remove('big-line', 'medium-line'));
+  
+    if (closestLine) {
+      closestLine.classList.add('big-line');
+  
+      const centerIndex = lines.indexOf(closestLine);
+      const leftAdjacent = lines[centerIndex - 1];
+      const rightAdjacent = lines[centerIndex + 1];
+  
+      if (leftAdjacent) leftAdjacent.classList.add('medium-line');
+      if (rightAdjacent) rightAdjacent.classList.add('medium-line');
+  
+      const hour = parseInt(closestLine.id.split('-')[1], 10);
+  
+      const formattedTime = `${String(hour).padStart(2, '0')}:00`;
+  
+      timeDisplay.textContent = formattedTime;
+    }
+  };
+
+  highlightCenterLine();
+  
+  timeBar.addEventListener('mousedown', (e) => {
+    isMouseDown = true;
+    timeBar.classList.add('active');
+    startX = e.pageX - timeBar.offsetLeft;
+    scrollLeft = timeBar.scrollLeft;
+    e.preventDefault(); 
+  });
+  
+  timeBar.addEventListener('mouseleave', () => {
+    isMouseDown = false;
+    timeBar.classList.remove('active');
+  });
+ 
+  timeBar.addEventListener('mouseup', () => {
+    isMouseDown = false;
+    timeBar.classList.remove('active');
+  });
+  
+  timeBar.addEventListener('mousemove', (e) => {
+    if (!isMouseDown) return;
+    const x = e.pageX - timeBar.offsetLeft;
+    const walk = (x - startX) * 0.5; 
+    timeBar.scrollLeft = scrollLeft - walk;
+    highlightCenterLine(); 
+  });
+  
+  timeBar.addEventListener('scroll', () => {
+    highlightCenterLine();
+  });
 };
 
 window.onload = async () => {
