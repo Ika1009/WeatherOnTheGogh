@@ -35,31 +35,23 @@ const getWeatherCondition = (weatherCode) => {
   return conditions[weatherCode] || "Unknown weather condition";
 };
 
-const getWeatherData = async (lat, lon, city) => {
+const getWeatherData = async (lat, lon, city, timeIndex = 0) => {
   try {
     const response = await fetch(`${WEATHER_BASE_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${WEATHER_API_KEY}`);
     if (!response.ok) throw new Error(`Error fetching weather data: ${response.statusText}`);
 
     const data = await response.json();
 
-    const weatherCode = data.list[0].weather[0].id;
-    const weatherDesc = data.list[0].weather[0].main;
+    const weatherCode = data.list[timeIndex].weather[0].id;
+    const weatherDesc = data.list[timeIndex].weather[0].main;
     const weatherDescription = getWeatherCondition(weatherCode);
-    const temperature = Math.round(data.list[0].main.temp);
-    const fullTime = data.list[0].dt_txt;
+    const temperature = Math.round(data.list[timeIndex].main.temp);
+    const fullTime = data.list[timeIndex].dt_txt;
     const formattedTime = extractTime(fullTime);
 
     const videoSource = await getRandomVideoSource(weatherDescription);
 
-    const videoSourceElement = document.getElementById("video-source");
-    videoSourceElement.src = videoSource;
-
-    const videoElement = document.querySelector("video");
-    videoElement.load();
-
-    document.getElementById("temperature").textContent = `${temperature}°`;
-    document.getElementById("time").textContent = formattedTime;
-    document.getElementById("location").textContent = `${weatherDesc}, ${city}`;
+    updateUI(videoSource, temperature, formattedTime, weatherDesc, city);
   } catch (error) {
     console.error("Failed to fetch weather data:", error);
   }
@@ -88,6 +80,18 @@ const getRandomVideoSource = async (weatherDescription) => {
     console.error("Failed to get random video source:", error);
     return "default-video.mp4";
   }
+};
+
+const updateUI = (videoSource, temperature, formattedTime, weatherDesc, city) => {
+  const videoSourceElement = document.getElementById("video-source");
+  videoSourceElement.src = videoSource;
+
+  const videoElement = document.querySelector("video");
+  videoElement.load();
+
+  document.getElementById("temperature").textContent = `${temperature}°`;
+  document.getElementById("time").textContent = formattedTime;
+  document.getElementById("location").textContent = `${weatherDesc}, ${city}`;
 };
 
 const getLocationFromIP = async () => {
@@ -137,6 +141,7 @@ const initializeTimeBar = () => {
     timeBar.appendChild(hourContainer);
   }
 
+<<<<<<< HEAD
   const highlightCenterLine = () => {
     const lines = Array.from(document.querySelectorAll('.line')); 
     const timeBarRect = timeBar.getBoundingClientRect(); 
@@ -206,10 +211,21 @@ const initializeTimeBar = () => {
   
   timeBar.addEventListener('scroll', () => {
     highlightCenterLine();
+=======
+  timeBar.addEventListener('input', async (event) => {
+    const timeIndex = parseInt(event.target.value, 10) || 0;
+    const location = await getLocationFromIP();
+    if (location) {
+      const { latitude, longitude, city } = location;
+      await getWeatherData(latitude, longitude, city, timeIndex);
+    } else {
+      console.error("Could not determine location.");
+    }
+>>>>>>> 8de01ad8e25e5198fcb96b073161e6fc0471ff9b
   });
 };
 
-window.onload = async () => {
+const mainFunction = async () => {
   const location = await getLocationFromIP();
   if (location) {
     const { latitude, longitude, city } = location;
@@ -217,5 +233,9 @@ window.onload = async () => {
   } else {
     console.error("Could not determine location.");
   }
+};
+
+window.onload = async () => {
+  await mainFunction();
   initializeTimeBar();
 };
