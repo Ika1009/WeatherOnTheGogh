@@ -35,6 +35,8 @@ const getWeatherCondition = (weatherCode) => {
   return conditions[weatherCode] || "Unknown weather condition";
 };
 
+let hours;
+
 const getWeatherData = async (lat, lon, city, timeIndex = 0) => {
   try {
     const response = await fetch(`${WEATHER_BASE_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${WEATHER_API_KEY}`);
@@ -46,8 +48,7 @@ const getWeatherData = async (lat, lon, city, timeIndex = 0) => {
     const weatherDesc = data.list[timeIndex].weather[0].main;
     const weatherDescription = getWeatherCondition(weatherCode);
     const temperature = Math.round(data.list[timeIndex].main.temp);
-    const fullTime = data.list[timeIndex].dt_txt;
-    const formattedTime = extractTime(fullTime);
+    const formattedTime = extractTime();
 
     const videoSource = await getRandomVideoSource(weatherDescription);
 
@@ -57,9 +58,16 @@ const getWeatherData = async (lat, lon, city, timeIndex = 0) => {
   }
 };
 
-const extractTime = (apiTime) => {
-  const [date, time] = apiTime.split(" ");
-  return time.slice(0, 5);
+const extractTime = () => {
+  const now = new Date();
+
+  if (hours === undefined) {
+    hours = String(now.getHours()).padStart(2, '0');
+  } else {
+    hours = String(hours).padStart(2, '0');
+  }
+
+  return `${hours}:00`;
 };
 
 const getRandomVideoSource = async (weatherDescription) => {
@@ -128,7 +136,17 @@ const initializeTimeBar = () => {
     }
 
     line.classList.add('line');
-    line.id = `hour-${i}`;
+
+    if (hours < 24 && i >= 0 && i < 24) {
+      line.id = `hour-${hours}`;
+      hours++;
+    }
+    
+    else if (i >= 0 && i < 24) {
+      hours = 0;
+      line.id = `hour-${hours}`;
+      hours++;
+    }
 
     const hourContainer = document.createElement('div');
     hourContainer.style.width = '20px';
@@ -141,7 +159,6 @@ const initializeTimeBar = () => {
     timeBar.appendChild(hourContainer);
   }
 
-<<<<<<< HEAD
   const highlightCenterLine = () => {
     const lines = Array.from(document.querySelectorAll('.line')); 
     const timeBarRect = timeBar.getBoundingClientRect(); 
@@ -173,7 +190,7 @@ const initializeTimeBar = () => {
       if (leftAdjacent) leftAdjacent.classList.add('medium-line');
       if (rightAdjacent) rightAdjacent.classList.add('medium-line');
   
-      const hour = parseInt(closestLine.id.split('-')[1], 10);
+      const hour = hours = parseInt(closestLine.id.split('-')[1], 10);
   
       const formattedTime = `${String(hour).padStart(2, '0')}:00`;
   
@@ -196,9 +213,17 @@ const initializeTimeBar = () => {
     timeBar.classList.remove('active');
   });
  
-  timeBar.addEventListener('mouseup', () => {
+  timeBar.addEventListener('mouseup', async () => {
     isMouseDown = false;
     timeBar.classList.remove('active');
+    const timeIndex = hours || 0;
+    const location = await getLocationFromIP();
+    if (location) {
+      const { latitude, longitude, city } = location;
+      await getWeatherData(latitude, longitude, city, timeIndex);
+    } else {
+      console.error("Could not determine location.");
+    }
   });
   
   timeBar.addEventListener('mousemove', (e) => {
@@ -211,18 +236,9 @@ const initializeTimeBar = () => {
   
   timeBar.addEventListener('scroll', () => {
     highlightCenterLine();
-=======
-  timeBar.addEventListener('input', async (event) => {
-    const timeIndex = parseInt(event.target.value, 10) || 0;
-    const location = await getLocationFromIP();
-    if (location) {
-      const { latitude, longitude, city } = location;
-      await getWeatherData(latitude, longitude, city, timeIndex);
-    } else {
-      console.error("Could not determine location.");
-    }
->>>>>>> 8de01ad8e25e5198fcb96b073161e6fc0471ff9b
   });
+
+  return hours;
 };
 
 const mainFunction = async () => {
@@ -237,5 +253,5 @@ const mainFunction = async () => {
 
 window.onload = async () => {
   await mainFunction();
-  initializeTimeBar();
+  hours = initializeTimeBar();
 };
