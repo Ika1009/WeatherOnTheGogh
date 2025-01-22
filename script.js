@@ -36,13 +36,14 @@ const getWeatherCondition = (weatherCode) => {
 };
 
 let hours;
+let data;
 
 const getWeatherData = async (lat, lon, city, timeIndex = 0) => {
   try {
     const response = await fetch(`${WEATHER_BASE_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${WEATHER_API_KEY}`);
     if (!response.ok) throw new Error(`Error fetching weather data: ${response.statusText}`);
 
-    const data = await response.json();
+    data = await response.json();
 
     const weatherCode = data.list[timeIndex].weather[0].id;
     const weatherDesc = data.list[timeIndex].weather[0].main;
@@ -116,7 +117,6 @@ const updateUI = (videoSource, temperature, formattedTime, weatherDesc, city) =>
     videoElement.classList.add("show");
   }, 700);
 };
-
 
 const getLocationFromIP = async () => {
   try {
@@ -221,7 +221,7 @@ const initializeTimeBar = () => {
     timeBar.classList.add('active');
     startX = e.pageX - timeBar.offsetLeft;
     scrollLeft = timeBar.scrollLeft;
-    e.preventDefault(); 
+    e.preventDefault();
   });
   
   timeBar.addEventListener('mouseleave', () => {
@@ -232,7 +232,7 @@ const initializeTimeBar = () => {
   timeBar.addEventListener('mouseup', async () => {
     isMouseDown = false;
     timeBar.classList.remove('active');
-    const timeIndex = hours || 0;
+    const timeIndex = getWeatherIndex(hours, data) || 0;
     const location = await getLocationFromIP();
     if (location) {
       const { latitude, longitude, city } = location;
@@ -255,6 +255,18 @@ const initializeTimeBar = () => {
   });
 
   return hours;
+};
+
+const getWeatherIndex = (hour, apiResponse) => {
+  const timestamps = apiResponse.list.slice(0, 9).map(entry => entry.dt_txt);
+
+  return timestamps.reduce((closest, currentTimestamp, index) => {
+    const apiHour = parseInt(currentTimestamp.split(" ")[1].split(":")[0], 10);
+
+    return Math.abs(apiHour - hour) < Math.abs(parseInt(timestamps[closest].split(" ")[1].split(":")[0], 10) - hour)
+        ? index
+        : closest;
+    }, 0);
 };
 
 const mainFunction = async () => {
