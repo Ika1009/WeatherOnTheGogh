@@ -176,9 +176,9 @@ const initializeTimeBar = () => {
   }
 
   const highlightCenterLine = () => {
-    const lines = Array.from(document.querySelectorAll('.line')); 
-    const timeBarRect = timeBar.getBoundingClientRect(); 
-    const centerX = timeBarRect.left + timeBarRect.width / 2; 
+    const lines = Array.from(document.querySelectorAll('.line'));
+    const timeBarRect = timeBar.getBoundingClientRect();
+    const centerX = timeBarRect.left + timeBarRect.width / 2;
   
     let closestLine = null;
     let minDistance = Infinity;
@@ -193,28 +193,34 @@ const initializeTimeBar = () => {
         minDistance = distance;
       }
     });
-  
-    lines.forEach((line) => line.classList.remove('big-line', 'medium-line'));
+
+    lines.forEach((line) => line.classList.remove('big-line', 'medium-line', 'zoomed'));
   
     if (closestLine) {
-      closestLine.classList.add('big-line');
+      closestLine.classList.add('big-line', 'zoomed');
   
       const centerIndex = lines.indexOf(closestLine);
       const leftAdjacent = lines[centerIndex - 1];
       const rightAdjacent = lines[centerIndex + 1];
   
-      if (leftAdjacent) leftAdjacent.classList.add('medium-line');
-      if (rightAdjacent) rightAdjacent.classList.add('medium-line');
+      if (leftAdjacent) leftAdjacent.classList.add('medium-line', 'zoomed');
+      if (rightAdjacent) rightAdjacent.classList.add('medium-line', 'zoomed');
   
-      const hour = hours = parseInt(closestLine.id.split('-')[1], 10);
+      const hour = (hours = parseInt(closestLine.id.split('-')[1], 10));
   
       const formattedTime = `${String(hour).padStart(2, '0')}:00`;
   
       timeDisplay.textContent = formattedTime;
     }
-  };
+  };  
+
+  const clearZoom = () => {
+    const lines = document.querySelectorAll('.line');
+    lines.forEach((line) => line.classList.remove('zoomed'));
+  };  
 
   highlightCenterLine();
+  clearZoom();
   
   timeBar.addEventListener('mousedown', (e) => {
     isMouseDown = true;
@@ -227,11 +233,13 @@ const initializeTimeBar = () => {
   timeBar.addEventListener('mouseleave', () => {
     isMouseDown = false;
     timeBar.classList.remove('active');
+    clearZoom();
   });
  
   timeBar.addEventListener('mouseup', async () => {
     isMouseDown = false;
     timeBar.classList.remove('active');
+    clearZoom();
     const timeIndex = getWeatherIndex(hours, data) || 0;
     const location = await getLocationFromIP();
     if (location) {
@@ -249,7 +257,7 @@ const initializeTimeBar = () => {
     timeBar.scrollLeft = scrollLeft - walk;
     highlightCenterLine(); 
   });
-  
+
   timeBar.addEventListener('scroll', () => {
     highlightCenterLine();
   });
