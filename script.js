@@ -3,8 +3,6 @@ import weatherCategories from './data.js';
 
 const WEATHER_API_KEY = CONFIG.WEATHER_API_KEY;
 const WEATHER_BASE_URL = CONFIG.WEATHER_BASE_URL;
-const IPINFO_ACCESS_TOKEN = CONFIG.IPINFO_ACCESS_TOKEN;
-const IPINFO_API_URL = CONFIG.IPINFO_API_URL;
 
 const getWeatherCondition = (weatherCode) => {
   const conditions = {
@@ -118,22 +116,30 @@ const updateUI = (videoSource, temperature, formattedTime, weatherDesc, city) =>
 };
 
 
-const getLocationFromIP = async () => {
+const getLocationFromBrowser = async () => {
   try {
-    const locationResponse = await fetch(`${IPINFO_API_URL}?token=${IPINFO_ACCESS_TOKEN}`);
-    const locationData = await locationResponse.json();
-    const loc = locationData.loc;
+    if (!navigator.geolocation) {
+      throw new Error("Geolocation is not supported by this browser.");
+    }
 
-    if (!loc) throw new Error('IPInfo did not return location coordinates.');
-
-    const [latitude, longitude] = loc.split(',');
-
-    return { latitude, longitude, city: locationData.city };
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          resolve({ latitude, longitude });
+        },
+        (error) => {
+          console.error("Failed to fetch location from browser:", error);
+          reject(null);
+        }
+      );
+    });
   } catch (error) {
-    console.error("Failed to fetch location from IP:", error);
+    console.error("Error accessing browser geolocation:", error);
     return null;
   }
 };
+
 
 const initializeTimeBar = () => {
   const timeBar = document.getElementById('time-bar');
@@ -257,8 +263,8 @@ const initializeTimeBar = () => {
   return hours;
 };
 
+const location = await getLocationFromBrowser();
 const mainFunction = async () => {
-  const location = await getLocationFromIP();
   if (location) {
     const { latitude, longitude, city } = location;
     await getWeatherData(latitude, longitude, city);
