@@ -3,8 +3,6 @@ import weatherCategories from './data.js';
 
 const WEATHER_API_KEY = CONFIG.WEATHER_API_KEY;
 const WEATHER_BASE_URL = CONFIG.WEATHER_BASE_URL;
-const IPINFO_ACCESS_TOKEN = CONFIG.IPINFO_ACCESS_TOKEN;
-const IPINFO_API_URL = CONFIG.IPINFO_API_URL;
 
 const getWeatherCondition = (weatherCode) => {
   const conditions = {
@@ -37,6 +35,7 @@ const getWeatherCondition = (weatherCode) => {
 
 let hours;
 let data;
+let location;
 
 const getWeatherData = async (lat, lon, city, timeIndex = 0) => {
   try {
@@ -118,21 +117,27 @@ const updateUI = (videoSource, temperature, formattedTime, weatherDesc, city) =>
   }, 700);
 };
 
-const getLocationFromIP = async () => {
-  try {
-    const locationResponse = await fetch(`${IPINFO_API_URL}?token=${IPINFO_ACCESS_TOKEN}`);
-    const locationData = await locationResponse.json();
-    const loc = locationData.loc;
-
-    if (!loc) throw new Error('IPInfo did not return location coordinates.');
-
-    const [latitude, longitude] = loc.split(',');
-
-    return { latitude, longitude, city: locationData.city };
-  } catch (error) {
-    console.error("Failed to fetch location from IP:", error);
-    return null;
-  }
+const getLocationFromBrowser = async () => {
+  return new Promise((resolve) => {
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const geoApiUrl = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=en`;
+          const response = await fetch(geoApiUrl);
+          const data = await response.json();
+          resolve({ latitude, longitude, city: data.city });
+        } catch (error) {
+          console.error("Error fetching location data", error);
+          resolve(null);
+        }
+      },
+      () => {
+        console.error("Unable to retrieve your location");
+        resolve(null);
+      }
+    );
+  });
 };
 
 const initializeTimeBar = () => {
@@ -241,7 +246,6 @@ const initializeTimeBar = () => {
     timeBar.classList.remove('active');
     clearZoom();
     const timeIndex = getWeatherIndex(hours, data) || 0;
-    const location = await getLocationFromIP();
     if (location) {
       const { latitude, longitude, city } = location;
       await getWeatherData(latitude, longitude, city, timeIndex);
@@ -276,7 +280,7 @@ const getWeatherIndex = (hour, apiResponse) => {
 };
 
 const mainFunction = async () => {
-  const location = await getLocationFromIP();
+  location = await getLocationFromBrowser();
   if (location) {
     const { latitude, longitude, city } = location;
     await getWeatherData(latitude, longitude, city);
