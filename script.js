@@ -44,13 +44,14 @@ const getWeatherData = async (lat, lon, city, timeIndex = 0) => {
 
     data = await response.json();
 
+    const sunsetTime = new Date(data.city.sunset * 1000).getHours();
     const weatherCode = data.list[timeIndex].weather[0].id;
     const weatherDesc = data.list[timeIndex].weather[0].main;
     const weatherDescription = getWeatherCondition(weatherCode);
     const temperature = Math.round(data.list[timeIndex].main.temp);
     const formattedTime = extractTime();
 
-    const videoSource = await getRandomVideoSource(weatherDescription);
+    const videoSource = await getRandomVideoSource(weatherDescription, sunsetTime);
 
     updateUI(videoSource, temperature, formattedTime, weatherDesc, city);
   } catch (error) {
@@ -70,25 +71,51 @@ const extractTime = () => {
   return `${hours}:00`;
 };
 
-const getRandomVideoSource = async (weatherDescription) => {
+const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
   try {
     const trimmedDescription = weatherDescription.split('/').pop();
+    const timeOfDay = getTimeOfDay(sunsetTime);
+    console.log(`Current time of day: ${timeOfDay}`);
 
     if (!weatherCategories[trimmedDescription] || weatherCategories[trimmedDescription].length === 0) {
       throw new Error(`No videos available for weather condition: ${trimmedDescription}`);
     }
 
     const videos = weatherCategories[trimmedDescription];
-    const randomIndex = Math.floor(Math.random() * videos.length);
 
-    document.getElementById("image-label").textContent = videos[randomIndex].slice(5, -4).split(" - ").pop();
+    // Filter videos that contain the current time of day in their name
+    const filteredVideos = videos.filter(video => video.includes(timeOfDay));
 
-    return `${weatherDescription}/${videos[randomIndex]}`;
+    if (filteredVideos.length > 0) {
+      console.log(`Found a video matching time of day (${timeOfDay}).`);
+    } else {
+      console.log(`No video found for ${timeOfDay}, selecting a random one.`);
+    }
+
+    // Pick a random video from the filtered list, or from all if no match is found
+    const selectedVideos = filteredVideos.length > 0 ? filteredVideos : videos;
+    const randomIndex = Math.floor(Math.random() * selectedVideos.length);
+    
+    document.getElementById("image-label").textContent = selectedVideos[randomIndex].slice(5, -4).split(" - ").pop();
+
+    return `${weatherDescription}/${selectedVideos[randomIndex]}`;
   } catch (error) {
     console.error("Failed to get random video source:", error);
     return "default-video.mp4";
   }
 };
+
+const getTimeOfDay = (sunsetTime) => {
+  const currentTime = new Date().getHours();
+  if (currentTime < sunsetTime - 1) {
+    return "Day";
+  } else if (currentTime >= sunsetTime - 1 && currentTime <= sunsetTime + 1) {
+    return "Sunset";
+  } else {
+    return "Night";
+  }
+};
+
 
 const updateUI = (videoSource, temperature, formattedTime, weatherDesc, city) => {
   const videoElement = document.querySelector("video");
