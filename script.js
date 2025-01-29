@@ -3,6 +3,8 @@ import weatherCategories from './data.js';
 
 const WEATHER_API_KEY = CONFIG.WEATHER_API_KEY;
 const WEATHER_BASE_URL = CONFIG.WEATHER_BASE_URL;
+const IPINFO_ACCESS_TOKEN = CONFIG.IPINFO_ACCESS_TOKEN;
+const IPINFO_API_URL = CONFIG.IPINFO_API_URL;
 
 const getWeatherCondition = (weatherCode) => {
   const conditions = {
@@ -116,30 +118,22 @@ const updateUI = (videoSource, temperature, formattedTime, weatherDesc, city) =>
   }, 700);
 };
 
-const getLocationFromBrowser = async () => {
+const getLocationFromIP = async () => {
   try {
-    if (!navigator.geolocation) {
-      throw new Error("Geolocation is not supported by this browser.");
-    }
+    const locationResponse = await fetch(`${IPINFO_API_URL}?token=${IPINFO_ACCESS_TOKEN}`);
+    const locationData = await locationResponse.json();
+    const loc = locationData.loc;
 
-    return new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          resolve({ latitude, longitude });
-        },
-        (error) => {
-          console.error("Failed to fetch location from browser:", error);
-          reject(null);
-        }
-      );
-    });
+    if (!loc) throw new Error('IPInfo did not return location coordinates.');
+
+    const [latitude, longitude] = loc.split(',');
+
+    return { latitude, longitude, city: locationData.city };
   } catch (error) {
-    console.error("Error accessing browser geolocation:", error);
+    console.error("Failed to fetch location from IP:", error);
     return null;
   }
 };
-
 
 const initializeTimeBar = () => {
   const timeBar = document.getElementById('time-bar');
@@ -271,22 +265,8 @@ const initializeTimeBar = () => {
   return hours;
 };
 
-const location = await getLocationFromBrowser();
-
-const getWeatherIndex = (hour, apiResponse) => {
-  const timestamps = apiResponse.list.slice(0, 9).map(entry => entry.dt_txt);
-
-  return timestamps.reduce((closest, currentTimestamp, index) => {
-    const apiHour = parseInt(currentTimestamp.split(" ")[1].split(":")[0], 10);
-
-    return Math.abs(apiHour - hour) < Math.abs(parseInt(timestamps[closest].split(" ")[1].split(":")[0], 10) - hour)
-        ? index
-        : closest;
-    }, 0);
-};
-
-
 const mainFunction = async () => {
+  const location = await getLocationFromIP();
   if (location) {
     const { latitude, longitude, city } = location;
     await getWeatherData(latitude, longitude, city);
