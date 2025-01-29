@@ -82,8 +82,6 @@ const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
     }
 
     const videos = weatherCategories[trimmedDescription];
-
-    // Filter videos that contain the current time of day in their name
     const filteredVideos = videos.filter(video => video.includes(timeOfDay));
 
     if (filteredVideos.length > 0) {
@@ -92,7 +90,6 @@ const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
       console.log(`No video found for ${timeOfDay}, selecting a random one.`);
     }
 
-    // Pick a random video from the filtered list, or from all if no match is found
     const selectedVideos = filteredVideos.length > 0 ? filteredVideos : videos;
     const randomIndex = Math.floor(Math.random() * selectedVideos.length);
     
