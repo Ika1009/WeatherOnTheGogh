@@ -110,7 +110,7 @@ const updateUI = (videoSource, temperature, formattedTime, weatherDesc, city) =>
     videoElement.load();
 
     temperatureElement.textContent = `${temperature}°`;
-    timeElement.textContent = formattedTime;
+    timeElement.textContent = new Date().getHours() == formattedTime.split(':')[0] ? 'now' : formattedTime;
     locationElement.textContent = `${weatherDesc}, ${city}`;
 
     videoElement.classList.add("show");
