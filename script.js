@@ -265,6 +265,16 @@ const initializeTimeBar = () => {
   return hours;
 };
 
+const getWeatherIndex = (hour, apiResponse) => {
+  const timestamps = apiResponse.list.slice(0, 9).map(entry => entry.dt_txt);
+  return timestamps.reduce((closest, currentTimestamp, index) => {
+    const apiHour = parseInt(currentTimestamp.split(" ")[1].split(":")[0], 10);
+    return Math.abs(apiHour - hour) < Math.abs(parseInt(timestamps[closest].split(" ")[1].split(":")[0], 10) - hour)
+        ? index
+        : closest;
+    }, 0);
+};
+
 const mainFunction = async () => {
   const location = await getLocationFromIP();
   if (location) {
