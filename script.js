@@ -34,13 +34,14 @@ const getWeatherCondition = (weatherCode) => {
 };
 
 let hours;
+let data;
 
 const getWeatherData = async (lat, lon, city, timeIndex = 0) => {
   try {
     const response = await fetch(`${WEATHER_BASE_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${WEATHER_API_KEY}`);
     if (!response.ok) throw new Error(`Error fetching weather data: ${response.statusText}`);
 
-    const data = await response.json();
+    data = await response.json();
 
     const weatherCode = data.list[timeIndex].weather[0].id;
     const weatherDesc = data.list[timeIndex].weather[0].main;
@@ -115,7 +116,6 @@ const updateUI = (videoSource, temperature, formattedTime, weatherDesc, city) =>
   }, 700);
 };
 
-
 const getLocationFromBrowser = async () => {
   try {
     if (!navigator.geolocation) {
@@ -182,9 +182,9 @@ const initializeTimeBar = () => {
   }
 
   const highlightCenterLine = () => {
-    const lines = Array.from(document.querySelectorAll('.line')); 
-    const timeBarRect = timeBar.getBoundingClientRect(); 
-    const centerX = timeBarRect.left + timeBarRect.width / 2; 
+    const lines = Array.from(document.querySelectorAll('.line'));
+    const timeBarRect = timeBar.getBoundingClientRect();
+    const centerX = timeBarRect.left + timeBarRect.width / 2;
   
     let closestLine = null;
     let minDistance = Infinity;
@@ -199,46 +199,54 @@ const initializeTimeBar = () => {
         minDistance = distance;
       }
     });
-  
-    lines.forEach((line) => line.classList.remove('big-line', 'medium-line'));
+
+    lines.forEach((line) => line.classList.remove('big-line', 'medium-line', 'zoomed'));
   
     if (closestLine) {
-      closestLine.classList.add('big-line');
+      closestLine.classList.add('big-line', 'zoomed');
   
       const centerIndex = lines.indexOf(closestLine);
       const leftAdjacent = lines[centerIndex - 1];
       const rightAdjacent = lines[centerIndex + 1];
   
-      if (leftAdjacent) leftAdjacent.classList.add('medium-line');
-      if (rightAdjacent) rightAdjacent.classList.add('medium-line');
+      if (leftAdjacent) leftAdjacent.classList.add('medium-line', 'zoomed');
+      if (rightAdjacent) rightAdjacent.classList.add('medium-line', 'zoomed');
   
-      const hour = hours = parseInt(closestLine.id.split('-')[1], 10);
+      const hour = (hours = parseInt(closestLine.id.split('-')[1], 10));
   
       const formattedTime = `${String(hour).padStart(2, '0')}:00`;
   
       timeDisplay.textContent = formattedTime;
     }
-  };
+  };  
+
+  const clearZoom = () => {
+    const lines = document.querySelectorAll('.line');
+    lines.forEach((line) => line.classList.remove('zoomed'));
+  };  
 
   highlightCenterLine();
+  clearZoom();
   
   timeBar.addEventListener('mousedown', (e) => {
     isMouseDown = true;
     timeBar.classList.add('active');
     startX = e.pageX - timeBar.offsetLeft;
     scrollLeft = timeBar.scrollLeft;
-    e.preventDefault(); 
+    e.preventDefault();
   });
   
   timeBar.addEventListener('mouseleave', () => {
     isMouseDown = false;
     timeBar.classList.remove('active');
+    clearZoom();
   });
  
   timeBar.addEventListener('mouseup', async () => {
     isMouseDown = false;
     timeBar.classList.remove('active');
-    const timeIndex = hours || 0;
+    clearZoom();
+    const timeIndex = getWeatherIndex(hours, data) || 0;
     const location = await getLocationFromIP();
     if (location) {
       const { latitude, longitude, city } = location;
@@ -255,7 +263,7 @@ const initializeTimeBar = () => {
     timeBar.scrollLeft = scrollLeft - walk;
     highlightCenterLine(); 
   });
-  
+
   timeBar.addEventListener('scroll', () => {
     highlightCenterLine();
   });
@@ -264,6 +272,20 @@ const initializeTimeBar = () => {
 };
 
 const location = await getLocationFromBrowser();
+
+const getWeatherIndex = (hour, apiResponse) => {
+  const timestamps = apiResponse.list.slice(0, 9).map(entry => entry.dt_txt);
+
+  return timestamps.reduce((closest, currentTimestamp, index) => {
+    const apiHour = parseInt(currentTimestamp.split(" ")[1].split(":")[0], 10);
+
+    return Math.abs(apiHour - hour) < Math.abs(parseInt(timestamps[closest].split(" ")[1].split(":")[0], 10) - hour)
+        ? index
+        : closest;
+    }, 0);
+};
+
+
 const mainFunction = async () => {
   if (location) {
     const { latitude, longitude, city } = location;
