@@ -105,7 +105,7 @@ const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
 const getTimeOfDay = (sunsetTime) => {
   const now = new Date();
   const currentHour = now.getHours();
-  const chosenTime = extractTime(); // This function gets the selected hour
+  const chosenTime = extractTime(); // Gets the selected hour
   
   // If the chosen time is earlier than the current time, assume it's the next day
   const isNextDay = chosenTime < currentHour;
@@ -113,14 +113,25 @@ const getTimeOfDay = (sunsetTime) => {
   console.log(`CHOSEN TIME IS: ${chosenTime}, CURRENT HOUR IS: ${currentHour}, SUNSET TIME IS: ${sunsetTime}`);
   console.log(isNextDay ? "Chosen time is for the next day." : "Chosen time is for today.");
 
-  if (isNextDay || chosenTime < sunsetTime - 1) {
-    return "Day";
-  } else if (chosenTime >= sunsetTime - 1 && chosenTime <= sunsetTime + 1) {
-    return "Sunset";
+  if (isNextDay) {
+    // If it's the next day, keep "Night" until 6 AM
+    if (chosenTime < 6) {
+      return "Night";
+    } else {
+      return "Day";
+    }
   } else {
-    return "Night";
+    // Normal time of day calculation
+    if (chosenTime < sunsetTime - 1) {
+      return "Day";
+    } else if (chosenTime >= sunsetTime - 1 && chosenTime <= sunsetTime + 1) {
+      return "Sunset";
+    } else {
+      return "Night";
+    }
   }
 };
+
 
 
 const updateUI = (videoSource, temperature, formattedTime, weatherDesc, city) => {
