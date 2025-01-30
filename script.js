@@ -300,16 +300,23 @@ const initializeTimeBar = () => {
   timeBar.addEventListener('touchmove', (e) => {
     if (!isMouseDown) return;
     const x = e.touches[0].pageX - timeBar.offsetLeft;
-    const walk = (x - startX) * 0.5; // Adjust scroll speed if needed
+    const walk = (x - startX) * 0.5;
     timeBar.scrollLeft = scrollLeft - walk;
     highlightCenterLine();
   });
   
-  timeBar.addEventListener('touchend', () => {
+  timeBar.addEventListener('touchend', async () => {
     isMouseDown = false;
     timeBar.classList.remove('active');
     clearZoom();
-  });  
+    const timeIndex = getWeatherIndex(hours, data) || 0;
+    if (location) {
+      const { latitude, longitude, city } = location;
+      await getWeatherData(latitude, longitude, city, timeIndex);
+    } else {
+      console.error("Could not determine location.");
+    }
+  });
 
   return hours;
 };

@@ -127,24 +127,12 @@ video {
 }
 
 @media screen and (max-width: 768px) {
-  .temperature {
-    font-size: 48px;
-  }
-  .location {
-    font-size: 20px;
-  }
   .line {
     margin-right: calc(100vw / 31 - 2px);
   }
 }
 
 @media screen and (max-width: 480px) {
-  .temperature {
-    font-size: 36px;
-  }
-  .location {
-    font-size: 18px;
-  }
   .line {
     margin-right: calc(100vw / 31 - 2px);
   }
