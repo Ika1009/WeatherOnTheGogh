@@ -110,7 +110,7 @@ const getTimeOfDay = (sunsetTime) => {
   // If the chosen time is earlier than the current time, assume it's the next day
   const isNextDay = chosenTime < currentHour;
   
-  console.log(`CHOSEN TIME IS: ${chosenTime}, IS IT THE NEXT DAY: ${isNextDay, currentHour}, SUNSET TIME IS: ${sunsetTime}`);
+  console.log(`CHOSEN TIME IS: ${chosenTime}, IS IT THE NEXT DAY: ${isNextDay} Current Hour ${currentHour}, SUNSET TIME IS: ${sunsetTime}`);
   console.log(isNextDay ? "Chosen time is for the next day." : "Chosen time is for today.");
 
   if (isNextDay) {
