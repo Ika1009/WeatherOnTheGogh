@@ -132,8 +132,6 @@ const getTimeOfDay = (sunsetTime) => {
   }
 };
 
-
-
 const updateUI = (videoSource, temperature, formattedTime, weatherDesc, city) => {
   const videoElement = document.querySelector("video");
   const videoSourceElement = document.getElementById("video-source");
@@ -157,7 +155,9 @@ const updateUI = (videoSource, temperature, formattedTime, weatherDesc, city) =>
     timeElement.textContent = new Date().getHours() == formattedTime.split(':')[0] ? 'now' : formattedTime;
     locationElement.textContent = `${weatherDesc}, ${city}`;
 
-    videoElement.classList.add("show");
+    setTimeout(() => {
+      videoElement.classList.add("show");
+    }, 700);
   }, 700);
 };
 
