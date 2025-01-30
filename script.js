@@ -104,7 +104,7 @@ const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
 
 const getTimeOfDay = (sunsetTime) => {
   const currentTime = extractTime();
-  console.log("CHOSEN TIME IS: " + currentTime)
+  console.log("CHOSEN TIME IS: " + currentTime + " and sunset time is " + currentTime)
   if (currentTime < sunsetTime - 1) {
     return "Day";
   } else if (currentTime >= sunsetTime - 1 && currentTime <= sunsetTime + 1) {
