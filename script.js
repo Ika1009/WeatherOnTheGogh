@@ -103,11 +103,19 @@ const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
 };
 
 const getTimeOfDay = (sunsetTime) => {
-  const currentTime = extractTime();
-  console.log("CHOSEN TIME IS: " + currentTime + " and sunset time is " + currentTime)
-  if (currentTime < sunsetTime - 1) {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const chosenTime = extractTime(); // This function gets the selected hour
+  
+  // If the chosen time is earlier than the current time, assume it's the next day
+  const isNextDay = chosenTime < currentHour;
+  
+  console.log(`CHOSEN TIME IS: ${chosenTime}, CURRENT HOUR IS: ${currentHour}, SUNSET TIME IS: ${sunsetTime}`);
+  console.log(isNextDay ? "Chosen time is for the next day." : "Chosen time is for today.");
+
+  if (isNextDay || chosenTime < sunsetTime - 1) {
     return "Day";
-  } else if (currentTime >= sunsetTime - 1 && currentTime <= sunsetTime + 1) {
+  } else if (chosenTime >= sunsetTime - 1 && chosenTime <= sunsetTime + 1) {
     return "Sunset";
   } else {
     return "Night";
