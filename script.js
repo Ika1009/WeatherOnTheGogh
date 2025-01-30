@@ -290,6 +290,27 @@ const initializeTimeBar = () => {
     highlightCenterLine();
   });
 
+  timeBar.addEventListener('touchstart', (e) => {
+    isMouseDown = true;
+    timeBar.classList.add('active');
+    startX = e.touches[0].pageX - timeBar.offsetLeft;
+    scrollLeft = timeBar.scrollLeft;
+  });
+  
+  timeBar.addEventListener('touchmove', (e) => {
+    if (!isMouseDown) return;
+    const x = e.touches[0].pageX - timeBar.offsetLeft;
+    const walk = (x - startX) * 0.5; // Adjust scroll speed if needed
+    timeBar.scrollLeft = scrollLeft - walk;
+    highlightCenterLine();
+  });
+  
+  timeBar.addEventListener('touchend', () => {
+    isMouseDown = false;
+    timeBar.classList.remove('active');
+    clearZoom();
+  });  
+
   return hours;
 };
 
