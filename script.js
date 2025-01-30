@@ -103,7 +103,7 @@ const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
 };
 
 const getTimeOfDay = (sunsetTime) => {
-  const currentTime = new Date().getHours();
+  const currentTime = extractTime();
   if (currentTime < sunsetTime - 1) {
     return "Day";
   } else if (currentTime >= sunsetTime - 1 && currentTime <= sunsetTime + 1) {
