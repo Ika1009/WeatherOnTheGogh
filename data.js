@@ -60,21 +60,21 @@ const weatherCategories = {
     "701_Mist_mist": [
         "701 - Day - Avenue of Poplars.mp4",
         "701 - Day - Congregation Leaving the Reformed Church in Nuenen.mp4",
-        "701 - Day - Factories at Asnières (1887).mp4",
-        "701 - Day - Impasse des Deux Frères.mp4",
+        "701 - Day - Factories at Asnieres (1887).mp4",
+        "701 - Day - Impasse des Deux Freres.mp4",
         "701 - Day - The De Ruijterkade in Amsterdam.mp4",
         "701 - Day - The Old Church Tower at Nuenen (The Peasants' Churchyard).mp4",
         "701 - Sunset - The Old Church Tower at Nuenen (The Peasants' Churchyard).mp4",
         "701 - Sunset - The Vicarage at Nuenen.mp4"
     ],
     "721_Haze_haze": [
-        "712 - Day - Impasse des Deux Frères.mp4",
+        "712 - Day - Impasse des Deux Freres.mp4",
         "712 - Day - Montmartre Behind the Moulin de la Galette.mp4",
         "712 - Day - The Langlois Bridge at Arles.mp4"
     ],
     "741_Fog_fog": [
         "741 - Day - Autumn Landscape with Four Trees (1885).mp4",
-        "741 - Day - Impasse des Deux Frères.mp4"
+        "741 - Day - Impasse des Deux Freres.mp4"
     ],
     "771_Squall_squalls": [
         "771 - Day - Seascape near Les Saintes-Maries-de-la-Mer.mp4",
@@ -128,10 +128,10 @@ const weatherCategories = {
         "802 - Day - Garden of the Asylum.mp4",
         "802 - Day - Garden with Courting Couples Square Saint-Pierre.mp4",
         "802 - Day - Gate in the Paris Ramparts.mp4",
-        "802 - Day - Impasse des Deux Frères.mp4",
+        "802 - Day - Impasse des Deux Freres.mp4",
         "802 - Day - Montmartre Behind the Moulin de la Galette.mp4",
         "802 - Day - Old Vineyard with Peasant Woman.mp4",
-        "802 - Day - Ploughed Fields (The Furrows).mp4",
+        "802 - Day - Ploughed Fields ('The Furrows').mp4",
         "802 - Day - View from Theo's Apartment.mp4",
         "802 - Day - View of the Alpilles.mp4",
         "802 - Day - View of the Sea at Scheveningen.mp4",
