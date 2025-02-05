@@ -75,7 +75,6 @@ const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
   try {
     const trimmedDescription = weatherDescription.split('/').pop();
     const timeOfDay = getTimeOfDay(sunsetTime);
-    console.log(`Current time of day: ${timeOfDay}`);
 
     if (!weatherCategories[trimmedDescription] || weatherCategories[trimmedDescription].length === 0) {
       throw new Error(`No videos available for weather condition: ${trimmedDescription}`);
@@ -86,39 +85,30 @@ const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
     
     const keys = Object.keys(weatherCategories); 
     let currentIndex = keys.indexOf(trimmedDescription); 
-    let k = 0;
-    
+    let counter = 0;
     
     if (filteredVideos.length > 0) {
-        console.log(`Found a video matching time of day (${timeOfDay}).`);
-        
+      const selectedVideos = filteredVideos;
+      const randomIndex = Math.floor(Math.random() * selectedVideos.length);
+      
+      document.getElementById("image-label").textContent = selectedVideos[randomIndex].slice(5, -4).split(" - ").pop();
+      return `${weatherDescription}/${selectedVideos[randomIndex]}`;
+    }
+    
+    while (counter < keys.length) {
+      counter++;
+      currentIndex = (currentIndex + 1) % keys.length;  
+      videos = weatherCategories[keys[currentIndex]];
+      filteredVideos = videos.filter(video => video.includes(timeOfDay));
+  
+      if (filteredVideos.length > 0) {
         const selectedVideos = filteredVideos;
         const randomIndex = Math.floor(Math.random() * selectedVideos.length);
-        
-        document.getElementById("image-label").textContent = selectedVideos[randomIndex].slice(5, -4).split(" - ").pop();
-        return `${weatherDescription}/${selectedVideos[randomIndex]}`;
-    }
-    
-    
-    while (k < keys.length) {
-        console.log(`No video found for ${timeOfDay}, checking next category.`);
-    
-        k++;
-        currentIndex = (currentIndex + 1) % keys.length;  
-        videos = weatherCategories[keys[currentIndex]];
-        filteredVideos = videos.filter(video => video.includes(timeOfDay));
-    
-        if (filteredVideos.length > 0) {
-            console.log(`Found a video in category ${keys[currentIndex]}.`);
-    
-            const selectedVideos = filteredVideos;
-            const randomIndex = Math.floor(Math.random() * selectedVideos.length);
-    
-            document.getElementById("image-label").textContent = selectedVideos[randomIndex].slice(5, -4).split(" - ").pop();
-            return `Van Videos Categorised/${keys[currentIndex]}/${selectedVideos[randomIndex]}`;
-        }
-    }
 
+        document.getElementById("image-label").textContent = selectedVideos[randomIndex].slice(5, -4).split(" - ").pop();
+        return `Van Videos Categorised/${keys[currentIndex]}/${selectedVideos[randomIndex]}`;
+      }
+    }
     
   } catch (error) {
     console.error("Failed to get random video source:", error);
@@ -129,23 +119,17 @@ const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
 const getTimeOfDay = (sunsetTime) => {
   const now = new Date();
   const currentHour = now.getHours();
-  const chosenTime = parseInt(extractTime().split(":")[0], 10); // Ensure only the hour is used
+  const chosenTime = parseInt(extractTime().split(":")[0], 10);
   
-  // If the chosen time is earlier than the current time, assume it's the next day
   const isNextDay = chosenTime < currentHour;
-  
-  console.log(`CHOSEN TIME IS: ${chosenTime}, IS IT THE NEXT DAY: ${isNextDay} Current Hour ${currentHour}, SUNSET TIME IS: ${sunsetTime}`);
-  console.log(isNextDay ? "Chosen time is for the next day." : "Chosen time is for today.");
 
   if (isNextDay) {
-    // If it's the next day, keep "Night" until 6 AM
     if (chosenTime < 6) {
       return "Night";
     } else {
       return "Day";
     }
   } else {
-    // Normal time of day calculation
     if (chosenTime < sunsetTime - 1) {
       return "Day";
     } else if (chosenTime >= sunsetTime - 1 && chosenTime <= sunsetTime + 1) {
