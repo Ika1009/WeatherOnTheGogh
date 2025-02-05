@@ -115,7 +115,7 @@ const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
             const randomIndex = Math.floor(Math.random() * selectedVideos.length);
     
             document.getElementById("image-label").textContent = selectedVideos[randomIndex].slice(5, -4).split(" - ").pop();
-            return `${weatherDescription}/${selectedVideos[randomIndex]}`;
+            return `Van Videos Categorised/${keys[currentIndex]}/${selectedVideos[randomIndex]}`;
         }
     }
 
