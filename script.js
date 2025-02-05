@@ -81,21 +81,45 @@ const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
       throw new Error(`No videos available for weather condition: ${trimmedDescription}`);
     }
 
-    const videos = weatherCategories[trimmedDescription];
-    const filteredVideos = videos.filter(video => video.includes(timeOfDay));
-
+    let videos = weatherCategories[trimmedDescription];
+    let filteredVideos = videos.filter(video => video.includes(timeOfDay));
+    
+    const keys = Object.keys(weatherCategories); 
+    let currentIndex = keys.indexOf(trimmedDescription); 
+    let k = 0;
+    
+    
     if (filteredVideos.length > 0) {
-      console.log(`Found a video matching time of day (${timeOfDay}).`);
-    } else {
-      console.log(`No video found for ${timeOfDay}, selecting a random one.`);
+        console.log(`Found a video matching time of day (${timeOfDay}).`);
+        
+        const selectedVideos = filteredVideos;
+        const randomIndex = Math.floor(Math.random() * selectedVideos.length);
+        
+        document.getElementById("image-label").textContent = selectedVideos[randomIndex].slice(5, -4).split(" - ").pop();
+        return `${weatherDescription}/${selectedVideos[randomIndex]}`;
+    }
+    
+    
+    while (k < keys.length) {
+        console.log(`No video found for ${timeOfDay}, checking next category.`);
+    
+        k++;
+        currentIndex = (currentIndex + 1) % keys.length;  
+        videos = weatherCategories[keys[currentIndex]];
+        filteredVideos = videos.filter(video => video.includes(timeOfDay));
+    
+        if (filteredVideos.length > 0) {
+            console.log(`Found a video in category ${keys[currentIndex]}.`);
+    
+            const selectedVideos = filteredVideos;
+            const randomIndex = Math.floor(Math.random() * selectedVideos.length);
+    
+            document.getElementById("image-label").textContent = selectedVideos[randomIndex].slice(5, -4).split(" - ").pop();
+            return `${weatherDescription}/${selectedVideos[randomIndex]}`;
+        }
     }
 
-    const selectedVideos = filteredVideos.length > 0 ? filteredVideos : videos;
-    const randomIndex = Math.floor(Math.random() * selectedVideos.length);
     
-    document.getElementById("image-label").textContent = selectedVideos[randomIndex].slice(5, -4).split(" - ").pop();
-
-    return `${weatherDescription}/${selectedVideos[randomIndex]}`;
   } catch (error) {
     console.error("Failed to get random video source:", error);
     return "default-video.mp4";
