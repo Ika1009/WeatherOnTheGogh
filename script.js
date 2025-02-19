@@ -365,23 +365,21 @@ const mainFunction = async () => {
 window.onload = async () => {
   await mainFunction();
   hours = initializeTimeBar();
-  await testWeatherConditions();
-
+  testWeatherConditions();
 };
 
-const testWeatherConditions = async () => {
-  const weatherCodes = [
-      800, 801, 802, 803, 804, 200, 202, 230, 300, 301, 500, 501, 502, 503, 521, 
-      600, 601, 602, 622, 701, 721, 741, 771
-  ];
+const weatherCodes = [
+  800, 801, 802, 803, 804, 200, 202, 230, 300, 301, 500, 501, 502, 503, 521, 600, 601, 602, 622, 701, 721, 741, 771
+];
+
+const testWeatherConditions = () => {
+  console.log("Testing weather conditions for all codes (Day and Night)");
   
-  for (const code of weatherCodes) {
-      console.log(`Testing weather code: ${code} at Day (12 PM)`);
-      await getWeatherData(0, 0, "TestCity", 4); // Assuming 12 PM index
-      
-      console.log(`Testing weather code: ${code} at Night (3 AM)`);
-      await getWeatherData(0, 0, "TestCity", 1); // Assuming 3 AM index
-      
-      await new Promise(resolve => setTimeout(resolve, 5000)); // 5-second delay
-  }
+  weatherCodes.forEach(code => {
+      ["Day", "Night"].forEach(timeOfDay => {
+          const condition = getWeatherCondition(code);
+          console.log(`Weather Code: ${code}, Time of Day: ${timeOfDay}, Condition: ${condition}`);
+      });
+  });
 };
+
