@@ -365,21 +365,4 @@ const mainFunction = async () => {
 window.onload = async () => {
   await mainFunction();
   hours = initializeTimeBar();
-  testWeatherConditions();
 };
-
-const weatherCodes = [
-  800, 801, 802, 803, 804, 200, 202, 230, 300, 301, 500, 501, 502, 503, 521, 600, 601, 602, 622, 701, 721, 741, 771
-];
-
-const testWeatherConditions = () => {
-  console.log("Testing weather conditions for all codes (Day and Night)");
-  
-  weatherCodes.forEach(code => {
-      ["Day", "Night"].forEach(timeOfDay => {
-          const condition = getWeatherCondition(code);
-          console.log(`Weather Code: ${code}, Time of Day: ${timeOfDay}, Condition: ${condition}`);
-      });
-  });
-};
-
