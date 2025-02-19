@@ -363,9 +363,9 @@ const mainFunction = async () => {
 };
 
 window.onload = async () => {
+  console.log("Testing starting")
   await mainFunction();
   hours = initializeTimeBar();
-  console.log("Testing starting")
   await testBackgroundImages();
 };
 
