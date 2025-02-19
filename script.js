@@ -365,10 +365,11 @@ const mainFunction = async () => {
 window.onload = async () => {
   await mainFunction();
   hours = initializeTimeBar();
+  await testBackgroundImages();
 };
 
 // Run the test loop (you can comment this out when not testing).
-testBackgroundImages();
+
 
 // Test loop: iterate over every weather code and both Day and Night conditions.
 const testBackgroundImages = async () => {
