@@ -365,6 +365,8 @@ const mainFunction = async () => {
 window.onload = async () => {
   await mainFunction();
   hours = initializeTimeBar();
+  await testWeatherConditions();
+
 };
 
 const testWeatherConditions = async () => {
@@ -382,8 +384,4 @@ const testWeatherConditions = async () => {
       
       await new Promise(resolve => setTimeout(resolve, 5000)); // 5-second delay
   }
-};
-
-window.onload = async () => {
-  await testWeatherConditions();
 };
