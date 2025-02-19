@@ -373,7 +373,7 @@ window.onload = async () => {
 
 
 // Test loop: iterate over every weather code and both Day and Night conditions.
-const testBackgroundImages = async () => {
+const testBackgroundImages = async () => { 
   // List of weather codes we want to test.
   const weatherCodes = [
     800, 801, 802, 803, 804, 
@@ -408,6 +408,9 @@ const testBackgroundImages = async () => {
       
       // Restore the original getTimeOfDay function.
       window.getTimeOfDay = originalGetTimeOfDay;
+
+      // Add a 5-second delay before moving to the next iteration.
+      await new Promise(resolve => setTimeout(resolve, 5000));
     }
   }
 };
