@@ -70,24 +70,26 @@ const extractTime = () => {
   return `${hours}:00`;
 };
 
+// Modified getRandomVideoSource function
 const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
   try {
     // Extract the key (e.g. "800_Clear_clear sky") from the weather description path.
     const trimmedDescription = weatherDescription.split('/').pop();
-    // Determine the current time-of-day (Day, Sunset, or Night)
-    const timeOfDay = getTimeOfDay(sunsetTime);
+    // Use the overridden getTimeOfDay if available.
+    const timeOfDay = (window.getTimeOfDay || getTimeOfDay)(sunsetTime);
 
-    // Ensure the current folder exists in our video categories.
     if (!weatherCategories[trimmedDescription] || weatherCategories[trimmedDescription].length === 0) {
       throw new Error(`No videos available for weather condition: ${trimmedDescription}`);
     }
 
     let videos = weatherCategories[trimmedDescription];
-    // Filter out only those videos whose filenames include the specific time-of-day.
-    let matchingVideos = videos.filter(video => video.includes(timeOfDay));
+    // Check the filename format: "CODE - TIME - Title.mp4" and match the second segment exactly.
+    let matchingVideos = videos.filter(video => {
+      const segments = video.split(" - ");
+      return segments.length > 1 && segments[1].trim() === timeOfDay;
+    });
 
     if (matchingVideos.length > 0) {
-      // If found, randomly select one from the filtered list.
       const randomIndex = Math.floor(Math.random() * matchingVideos.length);
       document.getElementById("image-label").textContent =
         matchingVideos[randomIndex].slice(5, -4).split(" - ").pop();
@@ -96,20 +98,20 @@ const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
       // No matching video in current folder. Look for the nearest weather code folder with a matching video.
       const currentCode = parseInt(trimmedDescription.split('_')[0], 10);
       const allKeys = Object.keys(weatherCategories);
-      // Exclude the current folder.
       const otherKeys = allKeys.filter(key => key !== trimmedDescription);
 
-      // Sort the keys by the numerical difference from the current weather code.
       otherKeys.sort((a, b) => {
         const codeA = parseInt(a.split('_')[0], 10);
         const codeB = parseInt(b.split('_')[0], 10);
         return Math.abs(codeA - currentCode) - Math.abs(codeB - currentCode);
       });
 
-      // Iterate over the sorted keys to find a folder with a matching time-of-day video.
       for (const key of otherKeys) {
         const folderVideos = weatherCategories[key];
-        const matchingFolderVideos = folderVideos.filter(video => video.includes(timeOfDay));
+        const matchingFolderVideos = folderVideos.filter(video => {
+          const segments = video.split(" - ");
+          return segments.length > 1 && segments[1].trim() === timeOfDay;
+        });
         if (matchingFolderVideos.length > 0) {
           const randomIndex = Math.floor(Math.random() * matchingFolderVideos.length);
           document.getElementById("image-label").textContent =
@@ -117,7 +119,7 @@ const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
           return `Van Videos Categorised/${key}/${matchingFolderVideos[randomIndex]}`;
         }
       }
-      // If no folder contains a matching video, throw an error.
+
       throw new Error(`No videos found for time of day: ${timeOfDay}`);
     }
   } catch (error) {
