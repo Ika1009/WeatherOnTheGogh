@@ -6,29 +6,29 @@ const WEATHER_BASE_URL = CONFIG.WEATHER_BASE_URL;
 
 const getWeatherCondition = (weatherCode) => {
   const conditions = {
-      800: "Van Videos Categorised/800_Clear_clear sky",
-      801: "Van Videos Categorised/801_Clouds_few clouds 11 - 25",
-      802: "Van Videos Categorised/802_Clouds_scattered clouds 25-50",
-      803: "Van Videos Categorised/803_Clouds_broken clouds 51-84",
-      804: "Van Videos Categorised/804_Clouds_overcast clouds 85-100",
-      200: "Van Videos Categorised/200_Thunderstorm_thunderstorm with light rain",
-      202: "Van Videos Categorised/202_Thunderstorm_thunderstorm with heavy rain",
-      230: "Van Videos Categorised/230_Thunderstorm_thunderstorm with light drizzle",
-      300: "Van Videos Categorised/300_Drizzle_light intensity drizzle",
-      301: "Van Videos Categorised/301_Drizzle_drizzle",
-      500: "Van Videos Categorised/500_Rain_light rain",
-      501: "Van Videos Categorised/501_Rain_moderate rain",
-      502: "Van Videos Categorised/502_Rain_heavy intensity rain",
-      503: "Van Videos Categorised/503_Rain_very heavy rain",
-      521: "Van Videos Categorised/521_Rain_shower rain",
-      600: "Van Videos Categorised/600_Snow_light snow",
-      601: "Van Videos Categorised/601_Snow_snow",
-      602: "Van Videos Categorised/602_Snow_heavy snow",
-      622: "Van Videos Categorised/622_Snow_heavy shower snow",
-      701: "Van Videos Categorised/701_Mist_mist",
-      721: "Van Videos Categorised/721_Haze_haze",
-      741: "Van Videos Categorised/741_Fog_fog",
-      771: "Van Videos Categorised/771_Squall_squalls",
+    800: "Van Videos Categorised/800_Clear_clear sky",
+    801: "Van Videos Categorised/801_Clouds_few clouds 11 - 25",
+    802: "Van Videos Categorised/802_Clouds_scattered clouds 25-50",
+    803: "Van Videos Categorised/803_Clouds_broken clouds 51-84",
+    804: "Van Videos Categorised/804_Clouds_overcast clouds 85-100",
+    200: "Van Videos Categorised/200_Thunderstorm_thunderstorm with light rain",
+    202: "Van Videos Categorised/202_Thunderstorm_thunderstorm with heavy rain",
+    230: "Van Videos Categorised/230_Thunderstorm_thunderstorm with light drizzle",
+    300: "Van Videos Categorised/300_Drizzle_light intensity drizzle",
+    301: "Van Videos Categorised/301_Drizzle_drizzle",
+    500: "Van Videos Categorised/500_Rain_light rain",
+    501: "Van Videos Categorised/501_Rain_moderate rain",
+    502: "Van Videos Categorised/502_Rain_heavy intensity rain",
+    503: "Van Videos Categorised/503_Rain_very heavy rain",
+    521: "Van Videos Categorised/521_Rain_shower rain",
+    600: "Van Videos Categorised/600_Snow_light snow",
+    601: "Van Videos Categorised/601_Snow_snow",
+    602: "Van Videos Categorised/602_Snow_heavy snow",
+    622: "Van Videos Categorised/622_Snow_heavy shower snow",
+    701: "Van Videos Categorised/701_Mist_mist",
+    721: "Van Videos Categorised/721_Haze_haze",
+    741: "Van Videos Categorised/741_Fog_fog",
+    771: "Van Videos Categorised/771_Squall_squalls",
   };
   return conditions[weatherCode] || "Unknown weather condition";
 };
@@ -39,78 +39,90 @@ let location;
 
 const getWeatherData = async (lat, lon, city, timeIndex = 0) => {
   try {
-      const response = await fetch(`${WEATHER_BASE_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${WEATHER_API_KEY}`);
-      if (!response.ok) throw new Error(`Error fetching weather data: ${response.statusText}`);
+    const response = await fetch(
+      `${WEATHER_BASE_URL}?lat=${lat}&lon=${lon}&units=metric&appid=${WEATHER_API_KEY}`
+    );
+    if (!response.ok)
+      throw new Error(`Error fetching weather data: ${response.statusText}`);
 
-      data = await response.json();
-      const sunsetTime = new Date(data.city.sunset * 1000).getHours();
-      const weatherCode = data.list[timeIndex].weather[0].id;
-      const weatherDesc = data.list[timeIndex].weather[0].main;
-      const weatherDescription = getWeatherCondition(weatherCode);
-      const temperature = Math.round(data.list[timeIndex].main.temp);
-      const formattedTime = extractTime();
+    data = await response.json();
+    const sunsetTime = new Date(data.city.sunset * 1000).getHours();
+    const weatherCode = data.list[timeIndex].weather[0].id;
+    const weatherDesc = data.list[timeIndex].weather[0].main;
+    const weatherDescription = getWeatherCondition(weatherCode);
+    const temperature = Math.round(data.list[timeIndex].main.temp);
+    const formattedTime = extractTime();
 
-      const videoSource = await getRandomVideoSource(weatherDescription, sunsetTime);
-      updateUI(videoSource, temperature, formattedTime, weatherDesc, city);
+    const videoSource = await getRandomVideoSource(weatherDescription, sunsetTime);
+    updateUI(videoSource, temperature, formattedTime, weatherDesc, city);
   } catch (error) {
-      console.error("Failed to fetch weather data:", error);
+    console.error("Failed to fetch weather data:", error);
   }
 };
 
 const extractTime = () => {
   const now = new Date();
   if (hours === undefined) {
-      hours = String(now.getHours()).padStart(2, '0');
+    hours = String(now.getHours()).padStart(2, '0');
   } else {
-      hours = String(hours).padStart(2, '0');
+    hours = String(hours).padStart(2, '0');
   }
   return `${hours}:00`;
 };
 
 const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
   try {
-      const trimmedDescription = weatherDescription.split('/').pop();
-      const timeOfDay = getTimeOfDay(sunsetTime);
+    // Extract the key (e.g. "800_Clear_clear sky") from the weather description path.
+    const trimmedDescription = weatherDescription.split('/').pop();
+    // Determine the current time-of-day (Day, Sunset, or Night)
+    const timeOfDay = getTimeOfDay(sunsetTime);
 
-      if (!weatherCategories[trimmedDescription] || weatherCategories[trimmedDescription].length === 0) {
-          throw new Error(`No videos available for weather condition: ${trimmedDescription}`);
+    // Ensure the current folder exists in our video categories.
+    if (!weatherCategories[trimmedDescription] || weatherCategories[trimmedDescription].length === 0) {
+      throw new Error(`No videos available for weather condition: ${trimmedDescription}`);
+    }
+
+    let videos = weatherCategories[trimmedDescription];
+    // Filter out only those videos whose filenames include the specific time-of-day.
+    let matchingVideos = videos.filter(video => video.includes(timeOfDay));
+
+    if (matchingVideos.length > 0) {
+      // If found, randomly select one from the filtered list.
+      const randomIndex = Math.floor(Math.random() * matchingVideos.length);
+      document.getElementById("image-label").textContent =
+        matchingVideos[randomIndex].slice(5, -4).split(" - ").pop();
+      return `${weatherDescription}/${matchingVideos[randomIndex]}`;
+    } else {
+      // No matching video in current folder. Look for the nearest weather code folder with a matching video.
+      const currentCode = parseInt(trimmedDescription.split('_')[0], 10);
+      const allKeys = Object.keys(weatherCategories);
+      // Exclude the current folder.
+      const otherKeys = allKeys.filter(key => key !== trimmedDescription);
+
+      // Sort the keys by the numerical difference from the current weather code.
+      otherKeys.sort((a, b) => {
+        const codeA = parseInt(a.split('_')[0], 10);
+        const codeB = parseInt(b.split('_')[0], 10);
+        return Math.abs(codeA - currentCode) - Math.abs(codeB - currentCode);
+      });
+
+      // Iterate over the sorted keys to find a folder with a matching time-of-day video.
+      for (const key of otherKeys) {
+        const folderVideos = weatherCategories[key];
+        const matchingFolderVideos = folderVideos.filter(video => video.includes(timeOfDay));
+        if (matchingFolderVideos.length > 0) {
+          const randomIndex = Math.floor(Math.random() * matchingFolderVideos.length);
+          document.getElementById("image-label").textContent =
+            matchingFolderVideos[randomIndex].slice(5, -4).split(" - ").pop();
+          return `Van Videos Categorised/${key}/${matchingFolderVideos[randomIndex]}`;
+        }
       }
-
-      let videos = weatherCategories[trimmedDescription];
-      let filteredVideos = videos.filter(video => video.includes(timeOfDay));
-
-      if (filteredVideos.length > 0) {
-          const selectedVideos = filteredVideos;
-          const randomIndex = Math.floor(Math.random() * selectedVideos.length);
-          document.getElementById("image-label").textContent = selectedVideos[randomIndex].slice(5, -4).split(" - ").pop();
-          return `${weatherDescription}/${selectedVideos[randomIndex]}`;
-      } else {
-          const currentCode = parseInt(trimmedDescription.split('_')[0], 10);
-          const allKeys = Object.keys(weatherCategories);
-          const otherKeys = allKeys.filter(key => key !== trimmedDescription);
-
-          otherKeys.sort((a, b) => {
-              const codeA = parseInt(a.split('_')[0], 10);
-              const codeB = parseInt(b.split('_')[0], 10);
-              return Math.abs(codeA - currentCode) - Math.abs(codeB - currentCode);
-          });
-
-          for (const key of otherKeys) {
-              const videos = weatherCategories[key];
-              const filteredVideos = videos.filter(video => video.includes(timeOfDay));
-              if (filteredVideos.length > 0) {
-                  const selectedVideos = filteredVideos;
-                  const randomIndex = Math.floor(Math.random() * selectedVideos.length);
-                  document.getElementById("image-label").textContent = selectedVideos[randomIndex].slice(5, -4).split(" - ").pop();
-                  return `Van Videos Categorised/${key}/${selectedVideos[randomIndex]}`;
-              }
-          }
-
-          throw new Error(`No videos found for time of day: ${timeOfDay}`);
-      }
+      // If no folder contains a matching video, throw an error.
+      throw new Error(`No videos found for time of day: ${timeOfDay}`);
+    }
   } catch (error) {
-      console.error("Failed to get random video source:", error);
-      return "default-video.mp4";
+    console.error("Failed to get random video source:", error);
+    return "default-video.mp4";
   }
 };
 
@@ -121,15 +133,15 @@ const getTimeOfDay = (sunsetTime) => {
   const isNextDay = chosenTime < currentHour;
 
   if (isNextDay) {
-      return chosenTime < 6 ? "Night" : "Day";
+    return chosenTime < 6 ? "Night" : "Day";
   } else {
-      if (chosenTime < sunsetTime - 1) {
-          return "Day";
-      } else if (chosenTime >= sunsetTime - 1 && chosenTime <= sunsetTime + 1) {
-          return "Sunset";
-      } else {
-          return "Night";
-      }
+    if (chosenTime < sunsetTime - 1) {
+      return "Day";
+    } else if (chosenTime >= sunsetTime - 1 && chosenTime <= sunsetTime + 1) {
+      return "Sunset";
+    } else {
+      return "Night";
+    }
   }
 };
 
@@ -206,9 +218,7 @@ const initializeTimeBar = () => {
     if (hours < 24 && i >= 0 && i < 24) {
       line.id = `hour-${hours}`;
       hours++;
-    }
-    
-    else if (i >= 0 && i < 24) {
+    } else if (i >= 0 && i < 24) {
       hours = 0;
       line.id = `hour-${hours}`;
       hours++;
@@ -229,15 +239,15 @@ const initializeTimeBar = () => {
     const lines = Array.from(document.querySelectorAll('.line'));
     const timeBarRect = timeBar.getBoundingClientRect();
     const centerX = timeBarRect.left + timeBarRect.width / 2;
-  
+
     let closestLine = null;
     let minDistance = Infinity;
-  
+
     lines.forEach((line) => {
       const lineRect = line.getBoundingClientRect();
       const lineCenterX = lineRect.left + lineRect.width / 2;
       const distance = Math.abs(lineCenterX - centerX);
-  
+
       if (distance < minDistance) {
         closestLine = line;
         minDistance = distance;
@@ -245,33 +255,33 @@ const initializeTimeBar = () => {
     });
 
     lines.forEach((line) => line.classList.remove('big-line', 'medium-line', 'zoomed'));
-  
+
     if (closestLine) {
       closestLine.classList.add('big-line', 'zoomed');
-  
+
       const centerIndex = lines.indexOf(closestLine);
       const leftAdjacent = lines[centerIndex - 1];
       const rightAdjacent = lines[centerIndex + 1];
-  
+
       if (leftAdjacent) leftAdjacent.classList.add('medium-line', 'zoomed');
       if (rightAdjacent) rightAdjacent.classList.add('medium-line', 'zoomed');
-  
+
       const hour = (hours = parseInt(closestLine.id.split('-')[1], 10));
-  
+
       const formattedTime = `${String(hour).padStart(2, '0')}:00`;
-  
+
       timeDisplay.textContent = formattedTime;
     }
-  };  
+  };
 
   const clearZoom = () => {
     const lines = document.querySelectorAll('.line');
     lines.forEach((line) => line.classList.remove('zoomed'));
-  };  
+  };
 
   highlightCenterLine();
   clearZoom();
-  
+
   timeBar.addEventListener('mousedown', (e) => {
     isMouseDown = true;
     timeBar.classList.add('active');
@@ -279,13 +289,13 @@ const initializeTimeBar = () => {
     scrollLeft = timeBar.scrollLeft;
     e.preventDefault();
   });
-  
+
   timeBar.addEventListener('mouseleave', () => {
     isMouseDown = false;
     timeBar.classList.remove('active');
     clearZoom();
   });
- 
+
   timeBar.addEventListener('mouseup', async () => {
     isMouseDown = false;
     timeBar.classList.remove('active');
@@ -298,13 +308,13 @@ const initializeTimeBar = () => {
       console.error("Could not determine location.");
     }
   });
-  
+
   timeBar.addEventListener('mousemove', (e) => {
     if (!isMouseDown) return;
     const x = e.pageX - timeBar.offsetLeft;
-    const walk = (x - startX) * 0.5; 
+    const walk = (x - startX) * 0.5;
     timeBar.scrollLeft = scrollLeft - walk;
-    highlightCenterLine(); 
+    highlightCenterLine();
   });
 
   timeBar.addEventListener('scroll', () => {
@@ -317,7 +327,7 @@ const initializeTimeBar = () => {
     startX = e.touches[0].pageX - timeBar.offsetLeft;
     scrollLeft = timeBar.scrollLeft;
   });
-  
+
   timeBar.addEventListener('touchmove', (e) => {
     if (!isMouseDown) return;
     const x = e.touches[0].pageX - timeBar.offsetLeft;
@@ -325,7 +335,7 @@ const initializeTimeBar = () => {
     timeBar.scrollLeft = scrollLeft - walk;
     highlightCenterLine();
   });
-  
+
   timeBar.addEventListener('touchend', async () => {
     isMouseDown = false;
     timeBar.classList.remove('active');
@@ -347,9 +357,9 @@ const getWeatherIndex = (hour, apiResponse) => {
   return timestamps.reduce((closest, currentTimestamp, index) => {
     const apiHour = parseInt(currentTimestamp.split(" ")[1].split(":")[0], 10);
     return Math.abs(apiHour - hour) < Math.abs(parseInt(timestamps[closest].split(" ")[1].split(":")[0], 10) - hour)
-        ? index
-        : closest;
-    }, 0);
+      ? index
+      : closest;
+  }, 0);
 };
 
 const mainFunction = async () => {
@@ -363,17 +373,13 @@ const mainFunction = async () => {
 };
 
 window.onload = async () => {
-  console.log("Testing starting")
+  console.log("Testing starting");
   await mainFunction();
   hours = initializeTimeBar();
   await testBackgroundImages();
 };
 
-// Run the test loop (you can comment this out when not testing).
-
-
-// Test loop: iterate over every weather code and both Day and Night conditions.
-const testBackgroundImages = async () => { 
+const testBackgroundImages = async () => {
   // List of weather codes we want to test.
   const weatherCodes = [
     800, 801, 802, 803, 804, 
@@ -383,14 +389,14 @@ const testBackgroundImages = async () => {
     600, 601, 602, 622, 
     701, 721, 741, 771
   ];
-  const timesOfDay = ["Day", "Night"];
+  const timesOfDay = ["Day", "Sunset", "Night"];
 
   // Loop through each weather code...
   for (const code of weatherCodes) {
     // Get the weather description (i.e. the background folder path string)
     const weatherDescription = getWeatherCondition(code);
     
-    // ...and for each, test both "Day" and "Night" backgrounds.
+    // ...and for each, test all time of day values.
     for (const forcedTime of timesOfDay) {
       // Save the original getTimeOfDay function so we can restore it later.
       const originalGetTimeOfDay = getTimeOfDay;
@@ -414,5 +420,3 @@ const testBackgroundImages = async () => {
     }
   }
 };
-
-
