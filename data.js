@@ -63,8 +63,8 @@ const weatherCategories = {
         "701 - Day - Factories at Asnieres (1887).mp4",
         "701 - Day - Impasse des Deux Freres.mp4",
         "701 - Day - The De Ruijterkade in Amsterdam.mp4",
-        "701 - Day - The Old Church Tower at Nuenen (The Peasants' Churchyard).mp4",
-        "701 - Sunset - The Old Church Tower at Nuenen (The Peasants' Churchyard).mp4",
+        "701 - Day - The Old Church Tower at Nuenen ('The Peasants' Churchyard').mp4",
+        "701 - Sunset - The Old Church Tower at Nuenen ('The Peasants' Churchyard').mp4",
         "701 - Sunset - The Vicarage at Nuenen.mp4"
     ],
     "721_Haze_haze": [
@@ -85,7 +85,7 @@ const weatherCategories = {
         "800 - Day - Allotment with Sunflower.mp4",
         "800 - Day - Avenue of Poplars.mp4",
         "800 - Day - Bank of the Seine.mp4",
-        "800 - Day - By the Seine.mp4",
+        "800 - Day - By the Sein.mp4",
         "800 - Day - The Harvest.mp4",
         "800 - Day - The White Orchard.mp4",
         "800 - Day - View of Auvers-sur-Oise.mp4",
@@ -155,7 +155,7 @@ const weatherCategories = {
     "804_Clouds_overcast clouds 85-100": [
         "804 - Day - Farm with Stacks of Peat.mp4",
         "804 - Day - Houses Seen from the Back.mp4",
-        "804 - Day - The Old Church Tower at Nuenen (The Peasants' Churchyard).mp4",
+        "804 - Day - The Old Church Tower at Nuenen ('The Peasants' Churchyard').mp4",
         "804 - Day - View of Paris.mp4",
         "804 - Day - Women on the Peat Moor.mp4",
         "804 - Night - The Starry Night.mp4",
