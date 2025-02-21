@@ -370,40 +370,6 @@ const mainFunction = async () => {
 };
 
 window.onload = async () => {
-  //console.log("Testing starting");
   await mainFunction();
   hours = initializeTimeBar();
-  await testBackgroundImages();
-};
-
-const testBackgroundImages = async () => {
-  const weatherCodes = [
-    800, 801, 802, 803, 804, 
-    200, 202, 230, 
-    300, 301, 
-    500, 501, 502, 503, 521, 
-    600, 601, 602, 622, 
-    701, 721, 741, 771
-  ];
-  const timesOfDay = ["Day", "Sunset", "Night"];
-
-  for (const code of weatherCodes) {
-    const weatherDescription = getWeatherCondition(code);
-    
-    for (const forcedTime of timesOfDay) {
-      const originalGetTimeOfDay = getTimeOfDay;
-      
-      window.getTimeOfDay = () => forcedTime;
-      
-      const videoSource = await getRandomVideoSource(weatherDescription, 18);
-      
-      /*console.log(
-        `Weather code: ${code} (${weatherDescription}), Time: ${forcedTime} => Video Source: ${videoSource}`
-      );*/
-      
-      window.getTimeOfDay = originalGetTimeOfDay;
-
-      await new Promise(resolve => setTimeout(resolve, 5000));
-    }
-  }
 };
