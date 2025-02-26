@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://weatheronthegogh.com/sitemap.xml
