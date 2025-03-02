@@ -73,12 +73,9 @@ const extractTime = () => {
   return `${hours}:00`;
 };
 
-// Modified getRandomVideoSource function
 const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
   try {
-    // Extract the key (e.g. "800_Clear_clear sky") from the weather description path.
     const trimmedDescription = weatherDescription.split('/').pop();
-    // Use the overridden getTimeOfDay if available.
     const timeOfDay = (window.getTimeOfDay || getTimeOfDay)(sunsetTime);
 
     if (!weatherCategories[trimmedDescription] || weatherCategories[trimmedDescription].length === 0) {
@@ -86,7 +83,6 @@ const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
     }
 
     let videos = weatherCategories[trimmedDescription];
-    // Check the filename format: "CODE - TIME - Title.mp4" and match the second segment exactly.
     let matchingVideos = videos.filter(video => {
       const segments = video.split(" - ");
       return segments.length > 1 && segments[1].trim() === timeOfDay;
@@ -98,7 +94,6 @@ const getRandomVideoSource = async (weatherDescription, sunsetTime) => {
         matchingVideos[randomIndex].slice(5, -4).split(" - ").pop();
       return `${weatherDescription}/${matchingVideos[randomIndex]}`;
     } else {
-      // No matching video in current folder. Look for the nearest weather code folder with a matching video.
       const currentCode = parseInt(trimmedDescription.split('_')[0], 10);
       const allKeys = Object.keys(weatherCategories);
       const otherKeys = allKeys.filter(key => key !== trimmedDescription);
@@ -378,50 +373,6 @@ const mainFunction = async () => {
 };
 
 window.onload = async () => {
-  console.log("Testing starting");
   await mainFunction();
   hours = initializeTimeBar();
-  await testBackgroundImages();
-};
-
-const testBackgroundImages = async () => {
-  // List of weather codes we want to test.
-  const weatherCodes = [
-    800, 801, 802, 803, 804, 
-    200, 202, 230, 
-    300, 301, 
-    500, 501, 502, 503, 521, 
-    600, 601, 602, 622, 
-    701, 721, 741, 771
-  ];
-  const timesOfDay = ["Day", "Sunset", "Night"];
-
-  // Loop through each weather code...
-  for (const code of weatherCodes) {
-    // Get the weather description (i.e. the background folder path string)
-    const weatherDescription = getWeatherCondition(code);
-    
-    // ...and for each, test all time of day values.
-    for (const forcedTime of timesOfDay) {
-      // Save the original getTimeOfDay function so we can restore it later.
-      const originalGetTimeOfDay = getTimeOfDay;
-      
-      // Override getTimeOfDay to simply return our forced value.
-      window.getTimeOfDay = () => forcedTime;
-      
-      // Call getRandomVideoSource with a dummy sunsetTime (18 works for testing).
-      const videoSource = await getRandomVideoSource(weatherDescription, 18);
-      
-      // Log the test result to the console.
-      console.log(
-        `Weather code: ${code} (${weatherDescription}), Time: ${forcedTime} => Video Source: ${videoSource}`
-      );
-      
-      // Restore the original getTimeOfDay function.
-      window.getTimeOfDay = originalGetTimeOfDay;
-
-      // Add a 5-second delay before moving to the next iteration.
-      await new Promise(resolve => setTimeout(resolve, 5000));
-    }
-  }
 };
