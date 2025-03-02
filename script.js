@@ -48,7 +48,10 @@ const getWeatherData = async (lat, lon, city, timeIndex = 0) => {
     data = await response.json();
     const sunsetTime = new Date(data.city.sunset * 1000).getHours();
     const weatherCode = data.list[timeIndex].weather[0].id;
-    const weatherDesc = data.list[timeIndex].weather[0].main;
+
+    const detailedDesc = data.list[timeIndex].weather[0].description;
+    const weatherDesc = detailedDesc.charAt(0).toUpperCase() + detailedDesc.slice(1);
+    
     const weatherDescription = getWeatherCondition(weatherCode);
     const temperature = Math.round(data.list[timeIndex].main.temp);
     const formattedTime = extractTime();
