@@ -146,7 +146,7 @@ const weatherCategories = {
         "803 - Day - Farmhouse in a Wheatfield.mp4",
         "803 - Day - Garden with Courting Couples Square Saint-Pierre.mp4",
         "803 - Day - The Hill of Montmartre with Stone Quarry.mp4",
-        "803 - Night - Olive Grove.mp4",
+        "803 - Day - Olive Grove.mp4",
         "803 - Night - The Starry Night.mp4",
         "803 - Night - Wheatfield with Crows.mp4",
         "803 - Sunset - Olive Grove.mp4",
