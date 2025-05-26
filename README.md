@@ -1,6 +1,6 @@
-# Weather Gogh 🎨🌦️
+# Weather On The Gogh 🎨🌦️
 
-**Weather Gogh** is a unique weather app that pairs current weather conditions with a Van Gogh painting, capturing the atmosphere of the day with Vincent Van Gogh's iconic masterpieces. Built with plain JavaScript, Tailwind CSS, HTML, and a wide variety of Van Gogh paintings!
+**Weather On The Gogh** is a unique weather app that pairs current weather conditions with a Van Gogh painting, capturing the atmosphere of the day with Vincent Van Gogh's iconic masterpieces. Built with plain JavaScript, Tailwind CSS, HTML, and a wide variety of Van Gogh paintings!
 
 ## Features 🌟
 
@@ -11,7 +11,7 @@
 
 ## How It Works 🖌️
 
-Weather Gogh fetches live weather data from an API, then displays a Van Gogh painting to match:
+Weather On The Gogh fetches live weather data from an API, then displays a Van Gogh painting to match:
 
 - ☀️ **Sunny**: Bright landscapes like *Wheatfield with Crows*.
 - 🌧️ **Rainy**: Darker pieces like *The Starry Night*.
