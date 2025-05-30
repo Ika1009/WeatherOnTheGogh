@@ -364,10 +364,20 @@ const getWeatherIndex = (hour, apiResponse) => {
 
 const mainFunction = async () => {
   location = await getLocationFromBrowser();
+
+  document.getElementById('permission').style.display = 'none';
+
   if (location) {
+    document.getElementById('loading').style.display = 'flex';
+
     const { latitude, longitude, city } = location;
     await getWeatherData(latitude, longitude, city);
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('background').style.display = 'none';
   } else {
+    document.getElementById('background').style.display = 'none';
+
     console.error("Could not determine location.");
   }
 };

@@ -31,6 +31,22 @@
   </script>    
 </head>
 <body>
+    <div id="background" class="background"></div>
+
+    <div id="permission" class="overlay permission">
+      <div class="content">
+        <h1>🌍 Location access needed</h1>
+        <p>Please allow your location to use WeatherOnTheGogh.com</p>
+      </div>
+    </div>
+
+    <div id="loading" class="overlay loading" style="display: none;">
+      <div class="content">
+        <h1>⏳ Loading...</h1>
+        <p>The site is loading, please wait.</p>
+      </div>
+    </div>
+
     <div class="video-background">
         <video autoplay muted loop playsinline class="fade show">
             <source id="video-source" type="video/mp4">
