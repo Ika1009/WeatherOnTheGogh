@@ -153,7 +153,7 @@ const updateUI = (videoSource, temperature, formattedTime, weatherDesc, city) =>
   const locationElement = document.getElementById("location");
 
   videoElement.classList.remove("show");
-  
+
   setTimeout(() => {
     videoSourceElement.src = videoSource;
 
@@ -171,6 +171,11 @@ const updateUI = (videoSource, temperature, formattedTime, weatherDesc, city) =>
     setTimeout(() => {
       videoElement.classList.add("show");
     }, 700);
+
+    setTimeout(() => {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('background').style.display = 'none';
+    }, 1000);
   }, 700);
 };
 
@@ -363,23 +368,37 @@ const getWeatherIndex = (hour, apiResponse) => {
 };
 
 const mainFunction = async () => {
+  document.getElementById('permission').style.display = 'flex';
+  document.getElementById('loading').style.display = 'none';
   location = await getLocationFromBrowser();
-
-  document.getElementById('permission').style.display = 'none';
-
-  if (location) {
-    document.getElementById('loading').style.display = 'flex';
-
-    const { latitude, longitude, city } = location;
-    await getWeatherData(latitude, longitude, city);
-
+  if (!location)
+  {
+    document.getElementById('permission').style.display = 'flex';
     document.getElementById('loading').style.display = 'none';
-    document.getElementById('background').style.display = 'none';
-  } else {
-    document.getElementById('background').style.display = 'none';
-
-    console.error("Could not determine location.");
   }
+  else
+  {
+    document.getElementById('permission').style.display = 'none';
+    document.getElementById('loading').style.display = 'flex';
+  }
+  
+  do
+  {
+    location = await getLocationFromBrowser();
+
+    if (location)
+    {
+      document.getElementById('permission').style.display = 'none';
+      document.getElementById('loading').style.display = 'flex';
+
+      const { latitude, longitude, city } = location;
+      await getWeatherData(latitude, longitude, city);
+    } else
+    {
+      console.error("Could not determine location.");
+    }
+  }
+  while (!location);
 };
 
 window.onload = async () => {
