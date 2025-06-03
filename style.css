@@ -113,21 +113,17 @@ video {
 
 .image-label {
   font-size: 16px;
-  margin-top: 30px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-  width: fit-content;
-}
-
-.image-link-wrapper {
-  position: absolute;
-  left: 90%;
-  transform: translateX(-50%);
-  top: 15px;
 }
 
 .image-link {
+  position: absolute;
+  top: 88%;
+  right: 3%;
   font-size: 16px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  z-index: 3;
+  color: rgba(255, 255, 255, 1);
 }
 
 .fade {

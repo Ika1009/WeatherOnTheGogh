@@ -368,18 +368,19 @@ const getWeatherIndex = (hour, apiResponse) => {
 };
 
 const mainFunction = async () => {
-  document.getElementById('permission').style.display = 'flex';
-  document.getElementById('loading').style.display = 'none';
-  location = await getLocationFromBrowser();
-  if (!location)
-  {
-    document.getElementById('permission').style.display = 'flex';
-    document.getElementById('loading').style.display = 'none';
-  }
-  else
+  const defaultPermission = await navigator.permissions.query({ name: 'geolocation' });
+  if (defaultPermission.state === 'granted')
   {
     document.getElementById('permission').style.display = 'none';
     document.getElementById('loading').style.display = 'flex';
+  } else if (defaultPermission.state === 'denied')
+  {
+    document.getElementById('permission').style.display = 'flex';
+    document.getElementById('loading').style.display = 'none';
+  } else if (defaultPermission.state === 'prompt')
+  {
+    document.getElementById('permission').style.display = 'flex';
+    document.getElementById('loading').style.display = 'none';
   }
   
   do
